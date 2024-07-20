@@ -1,5 +1,10 @@
 # GRACE - GRAdient ComprEssion for distributed deep learning
 
+##Updated GRACE for new version of Horovod in Pytorch
+
+
+
+
 ## Context
 Powerful computer clusters are used nowadays to train complex deep neural networks (DNN) on large datasets. Distributed training workloads increasingly become communication bound. For this reason, many lossy compression techniques have been proposed to reduce the volume of transferred data, and consequently, accelerate training.
 
