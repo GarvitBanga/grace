@@ -1,4 +1,7 @@
 def grace_from_params(params):
+    import sys
+    sys.path.append("/Users/garvitbanga/Downloads/AritraDutta/FedCola-LOCAL/grace/")
+    sys.path.append("/content/grace/")
     import horovod.torch as hvd
     world_size = hvd.size()
     comp = params.get('compressor', 'none')
@@ -83,6 +86,7 @@ def grace_from_params(params):
         return Allreduce(compressor, memory)
     elif comm == 'allgather':
         from grace_dl.torch.communicator.allgather import Allgather
+        # print("compressor",compressor)
         return Allgather(compressor, memory, world_size)
     elif comm == 'broadcast':
         from grace_dl.torch.communicator.broadcast import Broadcast

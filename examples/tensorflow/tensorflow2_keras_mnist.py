@@ -14,11 +14,12 @@
 # ==============================================================================
 
 import tensorflow as tf
-
+import sys
+sys.path.append("/content/")
 import horovod.tensorflow.keras as hvd
-from grace_dl.tensorflow.communicator.allgather import Allgather
-from grace_dl.tensorflow.compressor.topk import TopKCompressor
-from grace_dl.tensorflow.memory.residual import ResidualMemory
+from grace.grace_dl.tensorflow.communicator.allgather import Allgather
+from grace.grace_dl.tensorflow.compressor.topk import TopKCompressor
+from grace.grace_dl.tensorflow.memory.residual import ResidualMemory
 
 # Horovod: initialize Horovod.
 hvd.init()
@@ -57,7 +58,7 @@ opt = tf.optimizers.Adam(0.001 * hvd.size())
 grc = Allgather(TopKCompressor(0.3), ResidualMemory(), hvd.size())
 
 # Horovod: add Horovod DistributedOptimizer.
-opt = hvd.DistributedOptimizer(opt, grace=grc)
+opt = hvd.DistributedOptimizer(opt, grc)
 
 # Horovod: Specify `experimental_run_tf_function=False` to ensure TensorFlow
 # uses hvd.DistributedOptimizer() to compute gradients.
@@ -81,7 +82,7 @@ callbacks = [
     # Horovod: using `lr = 1.0 * hvd.size()` from the very beginning leads to worse final
     # accuracy. Scale the learning rate `lr = 1.0` ---> `lr = 1.0 * hvd.size()` during
     # the first three epochs. See https://arxiv.org/abs/1706.02677 for details.
-    hvd.callbacks.LearningRateWarmupCallback(warmup_epochs=3, verbose=1),
+    hvd.callbacks.LearningRateWarmupCallback(warmup_epochs=3, verbose=1,initial_lr=0.01),
 ]
 
 # Horovod: save checkpoints only on worker 0 to prevent other workers from corrupting them.

@@ -1,4 +1,4 @@
-from grace_dl.torch import Communicator
+from grace.grace_dl.torch import Communicator
 from horovod.torch import allreduce_async_, synchronize
 
 

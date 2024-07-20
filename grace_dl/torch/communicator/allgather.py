@@ -1,6 +1,6 @@
 import torch
 
-from grace_dl.torch import Communicator
+from grace.grace_dl.torch import Communicator
 from horovod.torch import allgather, allgather_async, synchronize
 
 

@@ -1,28 +1,44 @@
+# Copyright 2019 Uber Technologies, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 from __future__ import print_function
 
 import math
-
+import sys
+sys.path.append("/content/")
+print(sys.path)
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import backend as K
+from tensorflow.compat.v1.keras import backend as K
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.models import Sequential
 
 import horovod.tensorflow.keras as hvd
-from grace_dl.tensorflow.communicator.allgather import Allgather
-from grace_dl.tensorflow.compressor.topk import TopKCompressor
-from grace_dl.tensorflow.memory.residual import ResidualMemory
+from grace.grace_dl.tensorflow.communicator.allgather import Allgather
+from grace.grace_dl.tensorflow.compressor.topk import TopKCompressor
+from grace.grace_dl.tensorflow.memory.residual import ResidualMemory
 
 # Horovod: initialize Horovod.
 hvd.init()
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
+K.set_session(tf.compat.v1.Session(config=config))
 
 batch_size = 128
 num_classes = 10
@@ -76,7 +92,7 @@ opt = keras.optimizers.Adadelta(1.0 * hvd.size())
 grc = Allgather(TopKCompressor(0.3), ResidualMemory(), hvd.size())
 
 # Horovod: add Horovod Distributed Optimizer.
-opt = hvd.DistributedOptimizer(opt, grace=grc)
+opt = hvd.DistributedOptimizer(opt, grc)
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=opt,
