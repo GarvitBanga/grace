@@ -104,9 +104,6 @@ def _check_function(function_factory, tensor):
 
 
 def _allreduce_function_factory(tensor):
-    # print("tensor",tensor)
-    # print("tensor",tensor[0].type())
-    # exit()
     return 'horovod_torch_allreduce_async_' + tensor.type().replace('.', '_')
 
 

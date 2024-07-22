@@ -9,12 +9,15 @@ class ResidualMemory(Memory):
 
     def compensate(self, tensor, name):
         """Update the tensor with the residuals."""
+        # print("inside residuals compensate")
         if name in self.residuals:
             tensor = self.beta * self.residuals[name] + self.gamma * tensor
+            # print("inside residuals",self.residuals[name] )
         return tensor
 
     def update(self, tensor, name, compressor, tensor_compressed, ctx):
         """Update the residuals."""
         tensor_decompressed = compressor.decompress(tensor_compressed, ctx)
         residual = tensor - tensor_decompressed
+        # print("residual update",residual)
         self.residuals[name] = residual

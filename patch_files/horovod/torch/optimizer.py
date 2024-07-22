@@ -42,6 +42,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                  process_set=global_process_set):
         super(self.__class__, self).__init__(params)
         self._grace = grace
+        self._process_set=process_set
         self._compression = compression
 
         if named_parameters is not None:
@@ -193,11 +194,8 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 tensor = tensor.to_dense()
             else:
                 return self._sparse_allreduce_grad_async(p, name)
-        # print("self._compression.",self._compression.compress)
-        # print("self._compression.",self._compression.compressor)
-        if self._grace and self._groups == 0 and self.op == Average:
-            # print("HERE")
-            handle, ctx = self._grace.send_step(tensor, name)
+        if self._grace and self._groups is None and self.op == Average:
+            handle, ctx = self._grace.send_step(tensor, name,self._process_set)
             postscale_factor = self.gradient_predivide_factor
         else:
 
@@ -290,8 +288,8 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                     self._group_counts[p] = 0
             else:
                 # When handle is a callable function, it returns the aggregated tensor result
-                if self._grace and self._groups == 0 and self.op == Average:
-                         output = self._grace.receive_step(handle, ctx)
+                if self._grace and self._groups is None and self.op == Average:
+                         output = self._grace.receive_step(handle, ctx,self._process_set)
                          p.grad.set_(output)
                 else:
                     output = synchronize(handle) if not callable(handle) else handle()
