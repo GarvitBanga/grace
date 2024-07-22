@@ -13,7 +13,6 @@ def sparsify(tensor, compress_ratio):
 
 def desparsify(tensors, numel):
     values, indices = tensors
-    # print("values, indices",values, indices,numel)
     tensor_decompressed = torch.zeros(numel, dtype=values.dtype, layout=values.layout, device=values.device)
     tensor_decompressed.scatter_(0, indices, values)
     return tensor_decompressed
