@@ -14,15 +14,11 @@
 # ==============================================================================
 
 import tensorflow as tf
-import sys
-sys.path.append("/content/")
 
-sys.path.append("/Users/garvitbanga/Downloads/AritraDutta/FedCola-LOCAL/")
-sys.path.append("/Users/garvitbanga/Downloads/AritraDutta/FedCola-LOCAL/grace/")
 import horovod.tensorflow as hvd
-from grace.grace_dl.tensorflow.communicator.allgather import Allgather
-from grace.grace_dl.tensorflow.compressor.topk import TopKCompressor
-from grace.grace_dl.tensorflow.memory.residual import ResidualMemory
+from grace_dl.tensorflow.communicator.allgather import Allgather
+from grace_dl.tensorflow.compressor.topk import TopKCompressor
+from grace_dl.tensorflow.memory.residual import ResidualMemory
 
 # Horovod: initialize Horovod.
 hvd.init()
@@ -72,7 +68,7 @@ def training_step(images, labels, first_batch):
         loss_value = loss(labels, probs)
 
     # Horovod: add Horovod Distributed GradientTape.
-    tape = hvd.DistributedGradientTape(tape, grc)
+    tape = hvd.DistributedGradientTape(tape, grace=grc)
 
     grads = tape.gradient(loss_value, mnist_model.trainable_variables)
     opt.apply_gradients(zip(grads, mnist_model.trainable_variables))
