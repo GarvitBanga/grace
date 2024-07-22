@@ -114,12 +114,14 @@ hvd.broadcast_optimizer_state(optimizer, root_rank=0)
 
 from grace_dl.torch.helper import grace_from_params
 params = {'compressor': 'topk', 'memory': 'residual', 'communicator': 'allgather'}
-grc = grace_from_params(params)
+
 
 # Horovod: wrap optimizer with DistributedOptimizer.
 if(hvd.ProcessSet.included(even_set)):
+  grc = grace_from_params(params,even_set)
   optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters(),grace=grc,process_set=even_set)
 else:
+  grc = grace_from_params(params,odd_set)
   optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters(),grace=grc,process_set=odd_set)
 
 
@@ -175,7 +177,10 @@ def test():
     test_accuracy = metric_average(test_accuracy, 'avg_accuracy')
 
     # Horovod: print output only on first rank.
-    if hvd.rank() == 0:
+    if(hvd.ProcessSet.included(even_set) and hvd.ProcessSet.rank(even_set)==0):
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {:.2f}%\n'.format(
+            test_loss, 100. * test_accuracy))
+    elif(hvd.ProcessSet.included(odd_set) and hvd.ProcessSet.rank(odd_set)==0):
         print('\nTest set: Average loss: {:.4f}, Accuracy: {:.2f}%\n'.format(
             test_loss, 100. * test_accuracy))
 
