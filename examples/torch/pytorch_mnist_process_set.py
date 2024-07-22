@@ -38,6 +38,9 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 # Horovod: initialize library.
 hvd.init()
+even_set = hvd.ProcessSet([0,2])
+odd_set = hvd.ProcessSet([1,3])
+hvd.init(process_sets=[even_set, odd_set])
 torch.manual_seed(args.seed)
 
 if args.cuda:
@@ -114,7 +117,10 @@ params = {'compressor': 'topk', 'memory': 'residual', 'communicator': 'allgather
 grc = grace_from_params(params)
 
 # Horovod: wrap optimizer with DistributedOptimizer.
-optimizer = hvd.DistributedOptimizer(optimizer, grc, named_parameters=model.named_parameters())
+if(hvd.ProcessSet.included(even_set)):
+  optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters(),grace=grc,process_set=even_set)
+else:
+  optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters(),grace=grc,process_set=odd_set)
 
 
 def train(epoch):
@@ -138,7 +144,10 @@ def train(epoch):
 
 def metric_average(val, name):
     tensor = torch.tensor(val)
-    avg_tensor = hvd.allreduce(tensor, name=name)
+    if(hvd.ProcessSet.included(even_set)):
+      avg_tensor = hvd.allreduce(tensor, name=name,process_set=even_set)
+    else:
+      avg_tensor = hvd.allreduce(tensor, name=name,process_set=odd_set)
     return avg_tensor.item()
 
 
