@@ -9,7 +9,6 @@ class Allgather(Communicator):
         super().__init__(compressor, memory)
         self.world_size = world_size
 
-
     def async_send(self, tensors_compressed, name,process_set):
         """
         :param tensors_compressed: list of flat tensors to communicate
