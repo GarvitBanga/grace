@@ -1,6 +1,6 @@
 import torch
 
-from grace.grace_dl.torch import Compressor
+from grace_dl.torch import Compressor
 
 
 def sparsify(tensor, compress_ratio):
