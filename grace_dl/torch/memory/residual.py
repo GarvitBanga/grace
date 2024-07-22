@@ -1,4 +1,4 @@
-from grace.grace_dl.torch import Memory
+from grace_dl.torch import Memory
 
 
 class ResidualMemory(Memory):
