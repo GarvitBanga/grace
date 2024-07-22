@@ -39,13 +39,9 @@ class Allgather(Communicator):
 
     def wait_receive(self, result, ctx,process_set):
         handles, tensor_sizes = result
-        # print("Result",result)
         tensors_ag = []
         for handle, sizes in zip(handles, tensor_sizes):
             gathered = synchronize(handle)
-            # print("gathered",gathered)
-            # print("gathered",len(gathered))
-            # print("sizes",sizes)
             tensors_ag.append(gathered.split(sizes))
         # import time
         # time.sleep(0.001)
