@@ -1,5 +1,5 @@
 from horovod.torch.mpi_ops import global_process_set
-def grace_from_params(params,processset=global_process_set.size()):
+def grace_from_params(params,processset=global_process_set):
     world_size = processset.size()
     comp = params.get('compressor', 'none')
     mem = params.get('memory', 'none')
