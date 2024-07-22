@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from grace.grace_dl.tensorflow import Compressor
+from grace_dl.tensorflow import Compressor
 
 
 def sparsify(tensor, compress_ratio):

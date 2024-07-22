@@ -1,6 +1,6 @@
 import torch
 
-from grace.grace_dl.torch import Compressor
+from grace_dl.torch import Compressor
 
 
 def sparsify(tensor, compress_ratio):
@@ -13,7 +13,6 @@ def sparsify(tensor, compress_ratio):
 
 def desparsify(tensors, numel):
     values, indices = tensors
-    # print("values, indices",values, indices,numel)
     tensor_decompressed = torch.zeros(numel, dtype=values.dtype, layout=values.layout, device=values.device)
     tensor_decompressed.scatter_(0, indices, values)
     return tensor_decompressed
@@ -22,7 +21,7 @@ def desparsify(tensors, numel):
 class TopKCompressor(Compressor):
 
     def __init__(self, compress_ratio):
-        super().__init__()#tensors_size_are_same=False
+        super().__init__()
         self.compress_ratio = compress_ratio
 
     def compress(self, tensor, name):

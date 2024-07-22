@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from grace.grace_dl.tensorflow import Communicator
+from grace_dl.tensorflow import Communicator
 from horovod.tensorflow import allgather
 
 

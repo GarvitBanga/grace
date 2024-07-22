@@ -1,10 +1,6 @@
-def grace_from_params(params,processset):
-    import sys
-    sys.path.append("/Users/garvitbanga/Downloads/AritraDutta/FedCola-LOCAL/grace/")
-    sys.path.append("/content/grace/")
+def grace_from_params(params):
     import horovod.torch as hvd
-    world_size = processset.size()
-    # print("world_size",world_size,processset.size())
+    world_size = hvd.size()
     comp = params.get('compressor', 'none')
     mem = params.get('memory', 'none')
     comm = params.get('communicator', 'allreduce')
@@ -87,7 +83,6 @@ def grace_from_params(params,processset):
         return Allreduce(compressor, memory)
     elif comm == 'allgather':
         from grace_dl.torch.communicator.allgather import Allgather
-        # print("compressor",compressor)
         return Allgather(compressor, memory, world_size)
     elif comm == 'broadcast':
         from grace_dl.torch.communicator.broadcast import Broadcast

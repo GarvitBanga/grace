@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from grace.grace_dl.tensorflow import Memory
+from grace_dl.tensorflow import Memory
 
 
 class ResidualMemory(Memory):
@@ -8,8 +8,8 @@ class ResidualMemory(Memory):
         self.residuals = {}
         self.beta = beta
         self.gamma = gamma
-        for v in tf.compat.v1.trainable_variables():
-            self.residuals[v.name] = tf.compat.v1.Variable(tf.zeros_like(v), trainable=False)
+        for v in tf.trainable_variables():
+            self.residuals[v.name] = tf.Variable(tf.zeros_like(v), trainable=False)
 
     def compensate(self, tensor, name):
         """Update the tensor with the residuals."""
