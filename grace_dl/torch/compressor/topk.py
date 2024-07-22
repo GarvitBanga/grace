@@ -22,7 +22,7 @@ def desparsify(tensors, numel):
 class TopKCompressor(Compressor):
 
     def __init__(self, compress_ratio):
-        super().__init__()#tensors_size_are_same=False
+        super().__init__()
         self.compress_ratio = compress_ratio
 
     def compress(self, tensor, name):
