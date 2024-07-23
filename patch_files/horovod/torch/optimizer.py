@@ -290,6 +290,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 # When handle is a callable function, it returns the aggregated tensor result
                 if self._grace and self._groups is None and self.op == Average:
                          output = self._grace.receive_step(handle, ctx,self._process_set)
+                         self._allreduce_delay[p] = self.backward_passes_per_step
                          p.grad.set_(output)
                 else:
                     output = synchronize(handle) if not callable(handle) else handle()
